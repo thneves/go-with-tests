@@ -5,8 +5,8 @@ import "testing"
 func TestSearch(t *testing.T) {
 	t.Run("key exists", func(t *testing.T) {
 		dictionary := Dictionary{"test": "this is a test"}
-		got, _ := dictionary.Search("a")
-		want := "this is the first letter"
+		got, _ := dictionary.Search("test")
+		want := "this is a test"
 		assertStrings(t, got, want)
 	})
 
@@ -44,6 +44,51 @@ func TestAdd(t *testing.T) {
 		assertError(t, err, ErrAlreadyExists)
 		assertDefinition(t, dictionary, word, definition)
 
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	t.Run("update existing value", func(t *testing.T) {
+		word := "test"
+		definition := "this is a test"
+		dictionary := Dictionary{word: definition}
+		newDefinition := "new definition"
+
+		err := dictionary.Update(word, newDefinition)
+
+		assertError(t, err, nil)
+		assertDefinition(t, dictionary, word, newDefinition)
+	})
+
+	t.Run("update non existing value", func(t *testing.T) {
+		word := "test"
+		definition := "this is a test"
+		dictionary := Dictionary{}
+
+		err := dictionary.Update(word, definition)
+
+		assertError(t, err, err)
+	})
+}
+
+func TestDelete(t *testing.T) {
+	t.Run("delete word", func(t *testing.T) {
+		word := "test"
+		definition := "this is a test"
+		dictionary := Dictionary{word: definition}
+
+		err := dictionary.Delete(word)
+
+		assertError(t, err, nil)
+	})
+
+	t.Run("word does not exist", func(t *testing.T) {
+		word := "test"
+		dictionary := Dictionary{}
+
+		err := dictionary.Delete(word)
+
+		assertError(t, err, ErrDoesntExist)
 	})
 }
 

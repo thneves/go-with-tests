@@ -1,15 +1,21 @@
 package maps
 
-import "errors"
-
 type Dictionary map[string]string
+type DictionaryErr string
 
-var ErrNotFound = errors.New("could not find the word in the Dictionary")
-var ErrAlreadyExists = errors.New("definition already exists")
+const (
+	ErrNotFound      = DictionaryErr("could not find the word in the Dictionary")
+	ErrAlreadyExists = DictionaryErr("definition already exists")
+	ErrDoesntExist   = DictionaryErr("cannot operate a non existing value")
+)
 
-func (d *Dictionary) Search(word string) (string, error) {
+func (e DictionaryErr) Error() string {
+	return string(e)
+}
 
-	definition, ok := (*d)[word]
+func (d Dictionary) Search(word string) (string, error) {
+
+	definition, ok := d[word]
 
 	if !ok {
 		return "", ErrNotFound
@@ -18,14 +24,47 @@ func (d *Dictionary) Search(word string) (string, error) {
 	return definition, nil
 }
 
-func (d *Dictionary) Add(word, definition string) error {
+func (d Dictionary) Add(word, definition string) error {
 
-	_, ok := (*d)[word]
+	_, err := d.Search(word)
 
-	if !ok {
-		(*d)[word] = definition
-		return nil
+	switch err {
+	case ErrNotFound:
+		d[word] = definition
+	case nil:
+		return ErrAlreadyExists
+	default:
+		return err
+	}
+	return nil
+}
+
+func (d Dictionary) Update(word, newDefinition string) error {
+	_, err := d.Search(word)
+
+	switch err {
+	case ErrNotFound:
+		return ErrDoesntExist
+	case nil:
+		d[word] = newDefinition
+	default:
+		return err
 	}
 
-	return ErrAlreadyExists
+	return nil
+}
+
+func (d Dictionary) Delete(word string) error {
+	_, err := d.Search(word)
+
+	switch err {
+	case ErrNotFound:
+		return ErrDoesntExist
+	case nil:
+		delete(d, word)
+	default:
+		return err
+	}
+
+	return nil
 }
