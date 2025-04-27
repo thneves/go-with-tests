@@ -1,4 +1,4 @@
-package struct
+package structs
 
 import "math"
 
