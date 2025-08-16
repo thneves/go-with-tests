@@ -1,6 +1,6 @@
 # go-with-tests
 
-Exercises from [Learn Go With Tests Book](quii.gitbook.io/learn-go-with-tests)
+Exercises from [Learn Go With Tests Book](https://quii.gitbook.io/learn-go-with-tests)
 
 - [x] Integers
 - [x] Iteration
